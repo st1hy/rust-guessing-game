@@ -1,53 +1,39 @@
+extern crate time;
 extern crate rand;
+
+mod guessing;
 
 use std::io;
 use std::cmp::Ordering;
-use rand::Rng;
 
-type Guess = u8;
-const MIN: Guess = 0;
-const MAX: Guess = 100;
+type GuessingMethod = guessing::GuessingMethod;
+type Guess = guessing::Guess;
+type TrulyRandom = guessing::random::TrulyRandom;
+
+const TEST_COUNT: u32 = 10_000;
 
 fn main() {
+	let min = guessing::MIN;
+	let max = guessing::MAX;
 	println!("Guessing game!");
-	println!("Guessing value in range of {min}..{max}",min=MIN, max=MAX);
-	println!("Random guessing with repetition finds result on avarage in {} tries",simulation(&mut TrulyRandom::new()));
+	println!("Guessing value in range of {}..{} simulation overhead: {}",min, max, TEST_COUNT);
+	print_simulation(&mut TrulyRandom::new(), "Random guessing with repetition");
 	println!("Your turn!");
-	user_guess();
+	//user_guess();
 }
 
-trait GuessingMethod {
-	fn new_guess(&mut self, previous_result: &Option<Ordering>) -> Guess;
+fn print_simulation(method: &mut GuessingMethod, method_name: &str) {
+	print!("{} finds result on avarage", method_name);
+	let past = time::precise_time_s();
+	print!(" in {} tries",simulation(method));
+	println!(" in {} s",time::precise_time_s() - past);
 }
 
-struct TrulyRandom {
-	rand: rand::ThreadRng,
-}
 
-impl TrulyRandom {
-	fn new() -> TrulyRandom {
-		TrulyRandom {rand: rand::thread_rng()}
-	}
-	
-	fn new_shared(rand2: rand::ThreadRng) -> TrulyRandom {
-		TrulyRandom {rand: rand2}
-	}
-}
-
-impl GuessingMethod for TrulyRandom {
-	fn new_guess(&mut self, _: &Option<Ordering>) -> Guess {
-		guess(&mut self.rand)
-	}
-}
-
-#[inline]
-fn guess(rng : &mut rand::ThreadRng) -> Guess {
-	rng.gen_range::<Guess>(MIN,MAX+1)
-}
 
 fn simulation(method: &mut GuessingMethod) -> f64 {
-	let count = 10_000;
 	let mut result: f64 = 0.;
+	let count = TEST_COUNT;
 	let mut rand = rand::thread_rng();
 	for _ in 0..count {
 		let r = comp_guess(&mut rand, method);
@@ -59,7 +45,7 @@ fn simulation(method: &mut GuessingMethod) -> f64 {
 }
 
 fn comp_guess(rng : &mut rand::ThreadRng, method: &mut GuessingMethod) -> u64 {
-	let target : Guess = guess(rng);
+	let target : Guess = guessing::guess(rng);
 	let mut number_of_tries : u64= 0;
 	let mut guess: Guess;
 	let mut guess_result: Option<Ordering> = None;
@@ -77,7 +63,7 @@ fn comp_guess(rng : &mut rand::ThreadRng, method: &mut GuessingMethod) -> u64 {
 }
 
 fn user_guess() {
-	let y : Guess = guess(&mut rand::thread_rng());
+	let y : Guess = guessing::guess(&mut rand::thread_rng());
 	let mut number_of_tries = 0;
 	loop {
 		println!("Guess a number between 0 - 100: ");
@@ -92,7 +78,7 @@ fn user_guess() {
 		match x.cmp(&y) {
 			Ordering::Less => println!("To small"),
 			Ordering::Greater => println!("To big"),
-			Ordering::Equal => { 
+			Ordering::Equal => {
 				println!("You won in {} tries!", number_of_tries);
 				break;
 			}
