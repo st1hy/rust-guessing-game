@@ -1,7 +1,6 @@
 extern crate rand;
 
 use std::cmp::Ordering;
-use rand::Rng;
 use std::vec::Vec;
 
 use guessing;
@@ -21,32 +20,32 @@ impl NoRepetitionRandom {
 			last_guesses: Vec::new()
 		}
 	}
+
+	pub fn reset(&mut self) {
+		self.last_guesses.clear();
+	}
+
+	fn push(&mut self, g: Guess) {
+		self.last_guesses.push(g);
+		self.last_guesses.sort();
+	}
 }
 
 impl guessing::GuessingMethod for NoRepetitionRandom {
 
-	fn new_guess(&mut self, previous_result: &Option<Ordering>) -> Guess {
-		match *previous_result {
-			Some(Ordering::Less) => {
-				1 as Guess
-			},
-			Some(Ordering::Greater) => {
-				2 as Guess
-			},
-			Some(Ordering::Equal) => {
-				3 as Guess
-			},
-			None => {
-				let g = guessing::guess(&mut self.rand);
-				self.last_guesses.push(g);
-				g
-			},
+	fn new_guess(&mut self, _: &Option<Ordering>) -> Guess {
+		let max = guessing::MAX - self.last_guesses.len() as Guess;
+		if max < 1 { panic!("No more guesses can be made.")}
+		let mut g = guessing::guess2(&mut self.rand, 0, max);
+		for i in &self.last_guesses {
+			if i <= &g { g+=1 };
 		}
+		self.push(g);
+		g
 	}
-}
-
-pub fn guess(rng : &mut rand::ThreadRng, min: Guess, max: Guess) -> Guess {
-	rng.gen_range::<Guess>(min,max+1)
+	fn reset(&mut self) {
+		NoRepetitionRandom::reset(self);
+	}
 }
 
 #[test]
@@ -54,8 +53,4 @@ fn it_works() {
 	let mut g = NoRepetitionRandom::new();
 	let guess_result: Option<Ordering> = None;
 	let result = g.new_guess(&guess_result);
-	assert!(g.new_guess(&Some(Ordering::Less))==1);
-	assert!(g.new_guess(&Some(Ordering::Greater))==2);
-	assert!(g.new_guess(&Some(Ordering::Equal))==3);
-	println!("{}",result);
 }

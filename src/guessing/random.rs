@@ -15,16 +15,13 @@ impl TrulyRandom {
 	pub fn new() -> TrulyRandom {
 		TrulyRandom {rand: rand::thread_rng()}
 	}
-
-	//pub fn new_shared(rand2: rand::ThreadRng) -> TrulyRandom {
-	//	TrulyRandom {rand: rand2}
-	//}
 }
 
 impl guessing::GuessingMethod for TrulyRandom {
 	fn new_guess(&mut self, _: &Option<Ordering>) -> Guess {
 		guessing::guess(&mut self.rand)
 	}
+	fn reset(&mut self) {}
 }
 
 
