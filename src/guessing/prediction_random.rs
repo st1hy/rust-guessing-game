@@ -1,6 +1,7 @@
 extern crate rand;
 
 use std::cmp::Ordering;
+use rand::distributions::{Range};
 
 use guessing;
 use guessing::GuessingMethod;
@@ -40,7 +41,7 @@ impl guessing::GuessingMethod for PredictionRandom {
             _ => (),
         }
         if self.min == self.max {return self.min;}
-        self.last = guessing::guess2(&mut self.rand, self.min, self.max);
+        self.last = guessing::guess2(&mut self.rand, &Range::new(self.min, self.max));
         self.last
 	}
 	fn reset(&mut self) {

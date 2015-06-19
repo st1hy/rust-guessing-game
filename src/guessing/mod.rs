@@ -1,7 +1,8 @@
 extern crate rand;
 
 use std::cmp::Ordering;
-use rand::Rng;
+use rand::{Rng};
+use rand::distributions::{IndependentSample, Range};
 
 pub mod random;
 pub mod no_repetition_random;
@@ -18,12 +19,10 @@ pub trait GuessingMethod {
 	fn reset(&mut self);
 }
 
-#[inline]
-pub fn guess(rng : &mut rand::ThreadRng) -> Guess {
-	guess2(rng, MIN, MAX)
+pub fn guess<R: Rng>(rng : &mut R) -> Guess {
+	guess2(rng, &Range::new(MIN, MAX))
 }
 
-#[inline]
-fn guess2(rng : &mut rand::ThreadRng, min: Guess, max: Guess) -> Guess {
-	rng.gen_range::<Guess>(min,max)
+fn guess2<R: Rng>(rng : &mut R, range: &Range<Guess>) -> Guess {
+	range.ind_sample(rng)
 }

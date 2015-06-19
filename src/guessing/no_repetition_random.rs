@@ -2,6 +2,7 @@ extern crate rand;
 
 use std::cmp::Ordering;
 use std::vec::Vec;
+use rand::distributions::{Range};
 
 use guessing;
 use guessing::GuessingMethod;
@@ -36,7 +37,7 @@ impl guessing::GuessingMethod for NoRepetitionRandom {
 	fn new_guess(&mut self, _: &Option<Ordering>) -> Guess {
 		let max = guessing::MAX - self.last_guesses.len() as Guess;
 		if max < 1 { panic!("No more guesses can be made.")}
-		let mut g = guessing::guess2(&mut self.rand, 0, max);
+		let mut g = guessing::guess2(&mut self.rand, &Range::new(0,max));
 		for i in &self.last_guesses {
 			if i <= &g { g+=1 };
 		}
