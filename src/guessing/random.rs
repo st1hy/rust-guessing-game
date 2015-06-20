@@ -7,19 +7,17 @@ use guessing::GuessingMethod;
 
 type Guess = guessing::Guess;
 
-pub struct TrulyRandom {
-	rand: rand::ThreadRng,
-}
+pub struct TrulyRandom;
 
 impl TrulyRandom {
 	pub fn new() -> TrulyRandom {
-		TrulyRandom {rand: rand::thread_rng()}
+		TrulyRandom
 	}
 }
 
 impl guessing::GuessingMethod for TrulyRandom {
 	fn new_guess(&mut self, _: &Option<Ordering>) -> Guess {
-		guessing::guess(&mut self.rand)
+		guessing::guess()
 	}
 	fn reset(&mut self) {}
 }

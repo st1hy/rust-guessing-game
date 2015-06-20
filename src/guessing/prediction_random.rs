@@ -9,7 +9,6 @@ use guessing::GuessingMethod;
 pub type Guess = guessing::Guess;
 
 pub struct PredictionRandom {
-	rand: rand::ThreadRng,
     min: Guess,
     max: Guess,
     last: Guess,
@@ -18,7 +17,6 @@ pub struct PredictionRandom {
 impl PredictionRandom {
 	pub fn new() -> PredictionRandom {
         PredictionRandom {
-			rand: rand::thread_rng(),
             min: guessing::MIN,
             max: guessing::MAX,
             last: 0,
@@ -41,7 +39,7 @@ impl guessing::GuessingMethod for PredictionRandom {
             _ => (),
         }
         if self.min == self.max {return self.min;}
-        self.last = guessing::guess2(&mut self.rand, &Range::new(self.min, self.max));
+        self.last = guessing::guess2(&Range::new(self.min, self.max));
         self.last
 	}
 	fn reset(&mut self) {

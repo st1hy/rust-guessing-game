@@ -10,14 +10,12 @@ use guessing::GuessingMethod;
 pub type Guess = guessing::Guess;
 
 pub struct NoRepetitionRandom {
-	rand: rand::ThreadRng,
 	last_guesses: Vec<Guess>,
 }
 
 impl NoRepetitionRandom {
 	pub fn new() -> NoRepetitionRandom {
 		NoRepetitionRandom {
-			rand: rand::thread_rng(),
 			last_guesses: Vec::new()
 		}
 	}
@@ -37,7 +35,7 @@ impl guessing::GuessingMethod for NoRepetitionRandom {
 	fn new_guess(&mut self, _: &Option<Ordering>) -> Guess {
 		let max = guessing::MAX - self.last_guesses.len() as Guess;
 		if max < 1 { panic!("No more guesses can be made.")}
-		let mut g = guessing::guess2(&mut self.rand, &Range::new(0,max));
+		let mut g = guessing::guess2(&Range::new(0,max));
 		for i in &self.last_guesses {
 			if i <= &g { g+=1 };
 		}
