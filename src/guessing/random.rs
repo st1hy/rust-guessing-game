@@ -20,8 +20,11 @@ impl guessing::GuessingMethod for TrulyRandom {
 		guessing::guess()
 	}
 	fn reset(&mut self) {}
-}
 
+	fn clone(&self) -> Box<guessing::GuessingMethod> {
+		Box::new(TrulyRandom)
+	}
+}
 
 #[test]
 fn it_works() {

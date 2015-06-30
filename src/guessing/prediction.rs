@@ -44,6 +44,15 @@ impl guessing::GuessingMethod for Prediction {
 	fn reset(&mut self) {
         Prediction::reset(self);
 	}
+
+	fn clone(&self) -> Box<guessing::GuessingMethod> {
+		let a =Prediction {
+            min: self.min,
+            max: self.max,
+            last: self.last,
+		};
+        Box::new(a)
+	}
 }
 
 #[test]

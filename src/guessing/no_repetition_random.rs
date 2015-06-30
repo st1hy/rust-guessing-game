@@ -45,6 +45,13 @@ impl guessing::GuessingMethod for NoRepetitionRandom {
 	fn reset(&mut self) {
 		NoRepetitionRandom::reset(self);
 	}
+	fn clone(&self) -> Box<guessing::GuessingMethod> {
+		let a = NoRepetitionRandom {
+			last_guesses: self.last_guesses.clone()
+		};
+		Box::new(a)
+
+	}
 }
 
 #[test]
