@@ -1,7 +1,6 @@
 extern crate rand;
 
 use std::cmp::Ordering;
-use std::vec::Vec;
 use rand::distributions::{Range};
 
 use guessing;
@@ -10,44 +9,48 @@ use guessing::GuessingMethod;
 pub type Guess = guessing::Guess;
 
 pub struct NoRepetitionRandom {
-	last_guesses: Vec<Guess>,
+	has_been_tried: [bool; guessing::MAX],
+	number_of_tries: Guess,
 }
 
 impl NoRepetitionRandom {
 	pub fn new() -> NoRepetitionRandom {
 		NoRepetitionRandom {
-			last_guesses: Vec::new()
+			has_been_tried: [false; guessing::MAX],
+			number_of_tries: 0,
 		}
 	}
 
 	pub fn reset(&mut self) {
-		self.last_guesses.clear();
-	}
-
-	fn push(&mut self, g: Guess) {
-		self.last_guesses.push(g);
-		self.last_guesses.sort();
+		self.has_been_tried = [false; guessing::MAX];
+		self.number_of_tries = 0;
 	}
 }
 
 impl guessing::GuessingMethod for NoRepetitionRandom {
 
 	fn new_guess(&mut self, _: &Option<Ordering>) -> Guess {
-		let max = guessing::MAX - self.last_guesses.len() as Guess;
+		let max = guessing::MAX - self.number_of_tries as Guess;
 		if max < 1 { panic!("No more guesses can be made.")}
 		let mut g = guessing::guess2(&Range::new(0,max));
-		for i in &self.last_guesses {
-			if i <= &g { g+=1 };
+		for i in g..self.has_been_tried.len() {
+			if i <= g && self.has_been_tried[i] { g+=1 };
 		}
-		self.push(g);
+		self.number_of_tries+=1;
+		self.has_been_tried[g] = true;
 		g
 	}
 	fn reset(&mut self) {
 		NoRepetitionRandom::reset(self);
 	}
 	fn clone(&self) -> Box<guessing::GuessingMethod> {
+		let mut array_clone = [false; guessing::MAX];
+		for i in 0..self.has_been_tried.len() {
+			array_clone[i] = self.has_been_tried[i];
+		}
 		let a = NoRepetitionRandom {
-			last_guesses: self.last_guesses.clone()
+			has_been_tried: array_clone,
+			number_of_tries: self.number_of_tries
 		};
 		Box::new(a)
 

@@ -187,10 +187,7 @@ impl SimulationEnv {
 			})
 		}).collect();
 		for thread in v.into_iter() {
-			match thread.join() {
-				Ok(_) => (),
-				Err(e) => println!("Thread panic! {:?}",e),
-			}
+			thread.join().unwrap();
 		};
 		let time = time::precise_time_s() - past;
 		println!("Total time spend: {}", time)
