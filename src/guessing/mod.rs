@@ -4,7 +4,7 @@ use std::cmp::Ordering;
 use rand::distributions::{IndependentSample, Range};
 
 pub mod random;
-pub mod no_repetition_random;
+pub mod iterate;
 pub mod prediction_random;
 pub mod prediction;
 

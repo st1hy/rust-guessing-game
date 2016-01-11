@@ -13,11 +13,11 @@ use std::sync::mpsc;
 type GuessingMethod = guessing::GuessingMethod;
 type Guess = guessing::Guess;
 type TrulyRandom = guessing::random::TrulyRandom;
-type NoRepetitionRandom = guessing::no_repetition_random::NoRepetitionRandom;
+type IterateGuess = guessing::iterate::IterateGuess;
 type PredictionRandom = guessing::prediction_random::PredictionRandom;
 type Prediction = guessing::prediction::Prediction;
 
-const TEST_COUNT: usize = 1000;
+const TEST_COUNT: usize = 10000;
 const NTHREADS: usize = 4;
 
 struct GuessingMethodSimulation {
@@ -119,8 +119,8 @@ impl SimulationEnv {
 			);
 		simulation_vec.push(Arc::new(Mutex::new(s)));
 		let s = GuessingMethodSimulation::new(
-				"Random guessing without repetition",
-				Box::new(NoRepetitionRandom::new())
+				"Iteration guessing",
+				Box::new(IterateGuess::new())
 			);
 		simulation_vec.push(Arc::new(Mutex::new(s)));
 		let s = GuessingMethodSimulation::new(
